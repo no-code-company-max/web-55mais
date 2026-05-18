@@ -30,7 +30,7 @@ export function ServiceDetailHero({
 }: Props) {
   return (
     <section className="bg-white px-4 py-12 md:px-6 md:py-16">
-      <div className="mx-auto grid max-w-[1200px] items-center gap-8 md:grid-cols-[1.1fr_0.9fr] md:gap-14">
+      <div className="mx-auto grid max-w-[1200px] items-start gap-8 md:grid-cols-[1.1fr_0.9fr] md:gap-14">
         <div>
           <h1 className="m-0 mb-3 text-3xl font-bold text-brand-text md:text-[2.6rem]">
             {name}
@@ -58,6 +58,8 @@ export function ServiceDetailHero({
           >
             {ctaLabel}
           </button>
+
+          {faqSlot && <div className="mt-10 md:mt-12">{faqSlot}</div>}
         </div>
 
         {imageUrl && (
@@ -73,10 +75,6 @@ export function ServiceDetailHero({
           </div>
         )}
       </div>
-
-      {faqSlot && (
-        <div className="mx-auto mt-10 max-w-[1200px] md:mt-14">{faqSlot}</div>
-      )}
     </section>
   );
 }
