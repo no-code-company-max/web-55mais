@@ -29,6 +29,43 @@ export type ServiceItem = {
   imageUrl?: string;
 };
 
+export type ServiceJsonLdInput = {
+  name: string;
+  description?: string;
+  url: string;
+  imageUrl?: string;
+  price?: number;
+  priceCurrency?: string;
+};
+
+export function serviceJsonLd(i: ServiceJsonLdInput) {
+  const offers =
+    i.price !== undefined && i.priceCurrency
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: i.price,
+            priceCurrency: i.priceCurrency,
+            availability: 'https://schema.org/InStock',
+          },
+        }
+      : {};
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: i.name,
+    ...(i.description ? { description: i.description } : {}),
+    ...(i.imageUrl ? { image: i.imageUrl } : {}),
+    url: absoluteUrl(i.url),
+    provider: {
+      '@type': 'Organization',
+      name: SITE_CONFIG.brandName,
+      url: absoluteUrl('/'),
+    },
+    ...offers,
+  };
+}
+
 export function serviceItemListJsonLd(items: ServiceItem[]) {
   return {
     '@context': 'https://schema.org',

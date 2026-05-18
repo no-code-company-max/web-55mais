@@ -1412,6 +1412,27 @@
       "button": "Fes-nos un suggeriment"
     }
   },
+  "serviceDetail": {
+    "meta": {
+      "titleTemplate": "{name} | 55+",
+      "descriptionFallback": "Descobreix aquest servei professional de la comunitat 55+ i reserva a prop teu."
+    },
+    "sections": {
+      "includes": "Inclou",
+      "benefits": "Beneficis",
+      "guarantees": "Fàcil i amb garanties",
+      "faqs": "Preguntes freqüents"
+    },
+    "price": {
+      "from": "des de",
+      "unknown": "Consultar preu"
+    },
+    "cta": {
+      "reserve": "Reserva ara",
+      "joinTitle": "Tens talent per compartir? Uneix-te com a talent 55+",
+      "joinButton": "Vull oferir un servei"
+    }
+  },
   "ServiceSuggestion": {
     "modalTitle": "Fes-nos un suggeriment",
     "modalDescription": "Explica'ns quin servei necessites i t'avisarem quan estigui disponible.",

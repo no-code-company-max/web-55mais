@@ -1412,6 +1412,27 @@
       "button": "Envia-nos uma sugestão"
     }
   },
+  "serviceDetail": {
+    "meta": {
+      "titleTemplate": "{name} | 55+",
+      "descriptionFallback": "Conheça este serviço profissional da comunidade 55+ e reserve perto de você."
+    },
+    "sections": {
+      "includes": "Inclui",
+      "benefits": "Benefícios",
+      "guarantees": "Fácil e com garantias",
+      "faqs": "Perguntas frequentes"
+    },
+    "price": {
+      "from": "a partir de",
+      "unknown": "Consultar preço"
+    },
+    "cta": {
+      "reserve": "Reservar agora",
+      "joinTitle": "Tem talento para compartilhar? Junte-se como talento 55+",
+      "joinButton": "Quero oferecer um serviço"
+    }
+  },
   "ServiceSuggestion": {
     "modalTitle": "Envia-nos uma sugestão",
     "modalDescription": "Conta-nos que serviço precisas e avisamos-te quando estiver disponível.",

@@ -1412,6 +1412,27 @@
       "button": "Send us a suggestion"
     }
   },
+  "serviceDetail": {
+    "meta": {
+      "titleTemplate": "{name} | 55+",
+      "descriptionFallback": "Discover this professional service from the 55+ community and book near you."
+    },
+    "sections": {
+      "includes": "What's included",
+      "benefits": "Benefits",
+      "guarantees": "Easy and guaranteed",
+      "faqs": "Frequently asked questions"
+    },
+    "price": {
+      "from": "from",
+      "unknown": "Request a quote"
+    },
+    "cta": {
+      "reserve": "Book now",
+      "joinTitle": "Got a skill to share? Join as a 55+ talent",
+      "joinButton": "I want to offer a service"
+    }
+  },
   "ServiceSuggestion": {
     "modalTitle": "Send us a suggestion",
     "modalDescription": "Tell us what service you need and we'll let you know when it's available.",
