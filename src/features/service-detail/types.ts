@@ -18,7 +18,6 @@ export type ServiceDetailView = {
   slug: string;
   name: string; // localized, falls back to slug, never empty
   description: string | null; // shown under H1; also feeds metadata/JSON-LD
-  includes: string | null;
   benefits: string[];
   guarantees: string[];
   faqs: ServiceDetailFaq[];

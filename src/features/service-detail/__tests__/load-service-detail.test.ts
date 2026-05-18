@@ -91,7 +91,6 @@ describe('_loadServiceDetailUncached', () => {
       slug: 'paseos',
       name: 'Paseos',
       description: 'desc',
-      includes: 'Acompañamiento',
       benefits: ['b1', 'b2'],
       guarantees: ['g1'],
       faqs: [{ id: 'faq-0', question: 'P', answer: 'R' }],
@@ -191,7 +190,6 @@ describe('_loadServiceDetailUncached', () => {
     expect(v?.guarantees).toEqual([]);
     expect(v?.faqs).toEqual([]);
     expect(v?.description).toBeNull();
-    expect(v?.includes).toBeNull();
   });
 
   it('faqs: synthetic ids, drops items with empty question/answer', async () => {

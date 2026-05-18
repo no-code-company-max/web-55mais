@@ -3,7 +3,6 @@ import { unstable_setRequestLocale, getTranslations } from 'next-intl/server';
 import {
   loadServiceDetail,
   ServiceDetailHero,
-  ServiceDetailIncludes,
   ServiceDetailBenefits,
 } from '@/features/service-detail';
 import { PublicFaqAccordion } from '@/features/faqs/components/public-faq-accordion';
@@ -64,13 +63,6 @@ export default async function ServiceDetailPage({
           ) : undefined
         }
       />
-
-      {svc.includes && (
-        <ServiceDetailIncludes
-          title={t('sections.includes')}
-          body={svc.includes}
-        />
-      )}
 
       {(svc.benefits.length > 0 || svc.guarantees.length > 0) && (
         <ServiceDetailBenefits

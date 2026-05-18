@@ -160,14 +160,6 @@ export function ServiceForm({ serviceId, translations }: Props) {
                 rows={3}
               />
             </div>
-            <div className="space-y-2">
-              <Label>{t('includes')}</Label>
-              <Textarea
-                value={current.includes}
-                onChange={(e) => updateField('includes', e.target.value)}
-                rows={2}
-              />
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>{t('heroTitle')}</Label>
