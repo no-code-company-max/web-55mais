@@ -5,6 +5,7 @@ import {
   ServiceDetailHero,
   ServiceDetailBenefits,
   ServiceCtaBanner,
+  ServiceHelpCta,
 } from '@/features/service-detail';
 import { PublicFaqAccordion } from '@/features/faqs/components/public-faq-accordion';
 import { HomeTestimonials } from '@/features/public-home/components/home-testimonials';
@@ -83,6 +84,12 @@ export default async function ServiceDetailPage({
       )}
 
       <HomeTestimonials locale={locale} />
+
+      <ServiceHelpCta
+        title={t('help.title')}
+        subtitle={t('help.subtitle')}
+        buttonLabel={t('help.button')}
+      />
     </>
   );
 }

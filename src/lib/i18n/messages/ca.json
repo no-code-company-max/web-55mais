@@ -1429,6 +1429,11 @@
       "reserve": "Reserva ara",
       "hire": "Contracta un servei",
       "offer": "Ofereix un servei"
+    },
+    "help": {
+      "title": "Tens dubtes?",
+      "subtitle": "T'acompanyem durant tot el procés perquè tot surti com esperes.",
+      "button": "Consulta aquí"
     }
   },
   "ServiceSuggestion": {

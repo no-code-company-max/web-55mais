@@ -1429,6 +1429,11 @@
       "reserve": "Book now",
       "hire": "Hire a service",
       "offer": "Offer a service"
+    },
+    "help": {
+      "title": "Have questions?",
+      "subtitle": "We'll assist you throughout the process so everything goes as you expect.",
+      "button": "Ask here"
     }
   },
   "ServiceSuggestion": {

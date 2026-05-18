@@ -1429,6 +1429,11 @@
       "reserve": "Reservar agora",
       "hire": "Contrate um serviço",
       "offer": "Ofereça um serviço"
+    },
+    "help": {
+      "title": "Tem dúvidas?",
+      "subtitle": "Vamos te acompanhar durante todo o processo para que tudo saia como você espera.",
+      "button": "Consulte aqui"
     }
   },
   "ServiceSuggestion": {

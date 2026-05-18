@@ -7,10 +7,16 @@ type Props = {
   params: { locale: string };
 };
 
-export default function PublicLayout({
+// Same public shell as (public) but WITHOUT the newsletter band — the
+// service detail page closes with its own "¿Tienes dudas?" CTA.
+export default function ServiceDetailLayout({
   children,
   params: { locale },
 }: Props) {
   unstable_setRequestLocale(locale);
-  return <PublicShell locale={locale}>{children}</PublicShell>;
+  return (
+    <PublicShell locale={locale} showNewsletter={false}>
+      {children}
+    </PublicShell>
+  );
 }
