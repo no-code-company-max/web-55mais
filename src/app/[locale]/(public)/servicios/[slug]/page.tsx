@@ -58,6 +58,11 @@ export default async function ServiceDetailPage({
         ctaLabel={t('cta.reserve')}
         priceFromLabel={t('price.from')}
         priceUnknownLabel={t('price.unknown')}
+        faqSlot={
+          svc.faqs.length > 0 ? (
+            <PublicFaqAccordion items={svc.faqs} />
+          ) : undefined
+        }
       />
 
       {svc.includes && (
@@ -74,17 +79,6 @@ export default async function ServiceDetailPage({
           benefitsTitle={t('sections.benefits')}
           guaranteesTitle={t('sections.guarantees')}
         />
-      )}
-
-      {svc.faqs.length > 0 && (
-        <section className="bg-brand-cream px-4 py-12 md:px-6 md:py-16">
-          <div className="mx-auto max-w-[820px]">
-            <h2 className="m-0 mb-6 text-center text-2xl font-bold text-brand-text md:text-[2rem]">
-              {t('sections.faqs')}
-            </h2>
-            <PublicFaqAccordion items={svc.faqs} />
-          </div>
-        </section>
       )}
 
       <HomeTestimonials locale={locale} />

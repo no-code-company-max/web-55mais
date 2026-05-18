@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import type { ServiceDetailPrice } from '../types';
 import { ServicePrice } from './service-price';
@@ -10,6 +11,9 @@ type Props = {
   ctaLabel: string;
   priceFromLabel: string;
   priceUnknownLabel: string;
+  /** FAQ accordion, composed at the page layer (boundaries forbids
+   *  features→features), rendered below the CTA. */
+  faqSlot?: ReactNode;
 };
 
 // Asymmetric 2-column hero. CTA is intentionally inert (visible but
@@ -22,6 +26,7 @@ export function ServiceDetailHero({
   ctaLabel,
   priceFromLabel,
   priceUnknownLabel,
+  faqSlot,
 }: Props) {
   return (
     <section className="bg-white px-4 py-12 md:px-6 md:py-16">
@@ -68,6 +73,10 @@ export function ServiceDetailHero({
           </div>
         )}
       </div>
+
+      {faqSlot && (
+        <div className="mx-auto mt-10 max-w-[1200px] md:mt-14">{faqSlot}</div>
+      )}
     </section>
   );
 }

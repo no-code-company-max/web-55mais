@@ -1420,8 +1420,7 @@
     "sections": {
       "includes": "Ce qui est inclus",
       "benefits": "Avantages",
-      "guarantees": "Simple et garanti",
-      "faqs": "Questions fréquentes"
+      "guarantees": "Simple et garanti"
     },
     "price": {
       "from": "à partir de",
