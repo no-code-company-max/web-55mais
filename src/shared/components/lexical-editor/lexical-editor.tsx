@@ -136,9 +136,13 @@ function ChangePlugin({
   return <OnChangePlugin onChange={handleEditorChange} />;
 }
 
-// Plugin that loads initial state into the editor on mount and when
-// `state` or `html` reference changes (used by tab-swap pattern).
-// Preference order: state > html > empty.
+// Seeds the editor ONCE on mount (preference order: state > html >
+// empty). It deliberately does NOT react to later `state`/`html`
+// reference changes: those references change on every onChange echo,
+// and re-seeding here would clobber the user's cursor/selection (the
+// "kicked out after 1-2 keystrokes" bug). Genuine external resets
+// (locale tab swap, AI translate) are applied by remounting via the
+// parent's React `key`, not by this effect.
 function InitialStatePlugin({
   state,
   html,
@@ -173,7 +177,11 @@ function InitialStatePlugin({
     editor.update(() => {
       $getRoot().clear();
     });
-  }, [editor, state, html]);
+    // Mount-only on purpose. Adding `state`/`html` to deps reintroduces
+    // the onChange→re-seed feedback loop; external resets are handled
+    // by remount (parent `key`), not by re-running this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   return null;
 }

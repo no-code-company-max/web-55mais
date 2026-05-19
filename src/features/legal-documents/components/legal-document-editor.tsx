@@ -51,15 +51,26 @@ export function LegalDocumentEditor({ doc }: Props) {
   >(() => buildInitialTranslations(doc));
   const [activeLocale, setActiveLocale] = useState<string>(locales[0]);
   const [expectedUpdatedAt, setExpectedUpdatedAt] = useState(doc.updated_at);
+  const [resetNonce, setResetNonce] = useState(0);
+  const prevDocRef = useRef(doc);
   const [isPending, startTransition] = useTransition();
 
   // Sync local state when the page re-fetches (e.g. after AI translate
-  // → router.refresh() → fresh `doc` prop). Without this the editor
-  // keeps stale translations and a stale expectedUpdatedAt, breaking
-  // the next manual save.
+  // → router.refresh() → fresh `doc` prop). The editor is uncontrolled
+  // after mount; the only way to push the new content in is to remount
+  // it, so we bump `resetNonce` (part of the editor's `key`) here.
+  // Guarded by reference (not a first-run boolean) so React Strict
+  // Mode's double-invoked effect is idempotent, and so a manual save
+  // — which never changes the `doc` prop — does NOT remount and the
+  // cursor/undo are preserved. setTranslations + setResetNonce batch
+  // into one re-render, so the remount reads the fresh translations
+  // (no stale-content race).
   useEffect(() => {
+    if (prevDocRef.current === doc) return;
+    prevDocRef.current = doc;
     setTranslations(buildInitialTranslations(doc));
     setExpectedUpdatedAt(doc.updated_at);
+    setResetNonce((n) => n + 1);
   }, [doc]);
 
   const toolbarLabels = {
@@ -141,7 +152,7 @@ export function LegalDocumentEditor({ doc }: Props) {
           <TabsContent key={locale} value={locale} className="pt-3">
             {locale === activeLocale && (
               <LexicalEditor
-                key={locale}
+                key={`${locale}:${resetNonce}`}
                 initialState={current?.lexicalState ?? null}
                 initialHtml={current?.richHtml ?? null}
                 onChange={handleEditorChange}
