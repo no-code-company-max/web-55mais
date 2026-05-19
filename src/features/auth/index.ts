@@ -12,6 +12,7 @@ export type { ActiveCountry } from './actions/list-active-countries';
 export { AuthCard } from './components/auth-card';
 export { PasswordInput } from './components/password-input';
 export { GoogleButton } from './components/google-button';
+export { LoginForm } from './components/login-form';
 
 export { computeRegisterPrefill } from './lib/register-prefill';
 export type {
