@@ -37,6 +37,7 @@
     "dashboard": "Dashboard",
     "subtypes": "Subtypes",
     "talentTags": "Talent tags",
+    "orderTags": "Order tags",
     "fiscalIdTypes": "Fiscal IDs",
     "formDefinitions": "Forms",
     "surveyQuestions": "Survey Questions",
@@ -298,6 +299,20 @@
   "AdminTalentTags": {
     "title": "Talent tags",
     "description": "Manage the tags backoffice applies to talents. Deactivating keeps historical assignments.",
+    "addTag": "Add tag",
+    "noTags": "No tags defined.",
+    "slug": "slug",
+    "namePlaceholder": "Name",
+    "sortOrder": "Order",
+    "active": "Active",
+    "save": "Save",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "confirmDelete": "Deactivate this tag? Existing assignments will be preserved."
+  },
+  "AdminOrderTags": {
+    "title": "Order tags",
+    "description": "Manage the tags backoffice applies to orders. Deactivating keeps historical assignments.",
     "addTag": "Add tag",
     "noTags": "No tags defined.",
     "slug": "slug",

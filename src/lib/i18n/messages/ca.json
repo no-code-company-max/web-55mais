@@ -37,6 +37,7 @@
     "dashboard": "Tauler",
     "subtypes": "Subtipus",
     "talentTags": "Etiquetes de talent",
+    "orderTags": "Etiquetes de comanda",
     "fiscalIdTypes": "IDs fiscals",
     "formDefinitions": "Formularis",
     "surveyQuestions": "Preguntes Estadístiques",
@@ -298,6 +299,20 @@
   "AdminTalentTags": {
     "title": "Etiquetes de talent",
     "description": "Gestiona les etiquetes que el backoffice aplica als talents. Desactivar conserva les assignacions històriques.",
+    "addTag": "Afegir etiqueta",
+    "noTags": "No hi ha etiquetes definides.",
+    "slug": "slug",
+    "namePlaceholder": "Nom",
+    "sortOrder": "Ordre",
+    "active": "Actiu",
+    "save": "Desar",
+    "saving": "Desant...",
+    "delete": "Eliminar",
+    "confirmDelete": "Desactivar aquesta etiqueta? Les assignacions existents es conservaran."
+  },
+  "AdminOrderTags": {
+    "title": "Etiquetes de comanda",
+    "description": "Gestiona les etiquetes que el backoffice aplica a les comandes. Desactivar conserva les assignacions històriques.",
     "addTag": "Afegir etiqueta",
     "noTags": "No hi ha etiquetes definides.",
     "slug": "slug",

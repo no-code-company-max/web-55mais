@@ -37,6 +37,7 @@
     "dashboard": "Tableau de bord",
     "subtypes": "Sous-types",
     "talentTags": "Étiquettes de talent",
+    "orderTags": "Étiquettes de commande",
     "fiscalIdTypes": "IDs fiscaux",
     "formDefinitions": "Formulaires",
     "surveyQuestions": "Questions Statistiques",
@@ -298,6 +299,20 @@
   "AdminTalentTags": {
     "title": "Étiquettes de talent",
     "description": "Gérez les étiquettes que le back-office applique aux talents. La désactivation préserve les attributions historiques.",
+    "addTag": "Ajouter une étiquette",
+    "noTags": "Aucune étiquette définie.",
+    "slug": "slug",
+    "namePlaceholder": "Nom",
+    "sortOrder": "Ordre",
+    "active": "Actif",
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "delete": "Supprimer",
+    "confirmDelete": "Désactiver cette étiquette ? Les attributions existantes seront conservées."
+  },
+  "AdminOrderTags": {
+    "title": "Étiquettes de commande",
+    "description": "Gérez les étiquettes que le back-office applique aux commandes. La désactivation préserve les attributions historiques.",
     "addTag": "Ajouter une étiquette",
     "noTags": "Aucune étiquette définie.",
     "slug": "slug",

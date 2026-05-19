@@ -37,6 +37,7 @@
     "dashboard": "Dashboard",
     "subtypes": "Sub-tipos",
     "talentTags": "Etiquetas de talento",
+    "orderTags": "Etiquetas de pedido",
     "fiscalIdTypes": "IDs fiscales",
     "formDefinitions": "Formularios",
     "surveyQuestions": "Preguntas Estadísticas",
@@ -298,6 +299,20 @@
   "AdminTalentTags": {
     "title": "Etiquetas de talento",
     "description": "Gestiona las etiquetas que el backoffice aplica a los talentos. Al desactivar se conservan las asignaciones históricas.",
+    "addTag": "Añadir etiqueta",
+    "noTags": "No hay etiquetas definidas.",
+    "slug": "slug",
+    "namePlaceholder": "Nombre",
+    "sortOrder": "Orden",
+    "active": "Activo",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Desactivar esta etiqueta? Las asignaciones existentes se conservarán."
+  },
+  "AdminOrderTags": {
+    "title": "Etiquetas de pedido",
+    "description": "Gestiona las etiquetas que el backoffice aplica a los pedidos. Al desactivar se conservan las asignaciones históricas.",
     "addTag": "Añadir etiqueta",
     "noTags": "No hay etiquetas definidas.",
     "slug": "slug",
