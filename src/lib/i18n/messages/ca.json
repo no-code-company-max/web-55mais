@@ -945,7 +945,8 @@
     "countryLabel": "País",
     "countryPlaceholder": "Tria un país",
     "cityLabel": "Ciutat",
-    "cityPlaceholder": "Tria una ciutat"
+    "cityPlaceholder": "Tria una ciutat",
+    "modalClose": "Tancar"
   },
   "TalentOnboarding": {
     "pageTitle": "Completa el teu perfil",

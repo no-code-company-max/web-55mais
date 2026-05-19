@@ -101,6 +101,7 @@ type LocationHints = {
 export type ServiceHireHints = {
   addressLabel: string;
   addressPlaceholder: string;
+  modalClose: string;
   location: LocationHints;
   termsLabel: string;
   submitDisabledHint: string;
@@ -126,6 +127,7 @@ export function buildServiceHireHints(
   return {
     addressLabel: g('addressLabel'),
     addressPlaceholder: g('addressPlaceholder'),
+    modalClose: g('modalClose'),
     location: {
       countryLabel: g('countryLabel'),
       countryPlaceholder: g('countryPlaceholder'),

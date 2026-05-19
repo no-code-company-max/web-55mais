@@ -945,7 +945,8 @@
     "countryLabel": "Pays",
     "countryPlaceholder": "Choisissez un pays",
     "cityLabel": "Ville",
-    "cityPlaceholder": "Choisissez une ville"
+    "cityPlaceholder": "Choisissez une ville",
+    "modalClose": "Fermer"
   },
   "TalentOnboarding": {
     "pageTitle": "Complète ton profil",

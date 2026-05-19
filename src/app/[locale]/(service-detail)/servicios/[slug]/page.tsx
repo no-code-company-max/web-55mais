@@ -5,6 +5,7 @@ import {
   ServiceDetailHero,
   ServiceDetailBenefits,
 } from '@/features/service-detail';
+import { HireLauncher } from '@/features/service-hire/components/hire-launcher';
 import { PublicFaqAccordion } from '@/features/faqs/components/public-faq-accordion';
 import { HomeTestimonials } from '@/features/public-home/components/home-testimonials';
 import { CtaBanner } from '@/shared/components/marketing/cta-banner';
@@ -57,6 +58,14 @@ export default async function ServiceDetailPage({
         ctaLabel={t('cta.reserve')}
         priceFromLabel={t('price.from')}
         priceUnknownLabel={t('price.unknown')}
+        ctaSlot={
+          <HireLauncher
+            serviceId={svc.id}
+            serviceName={svc.name}
+            locale={locale}
+            ctaLabel={t('cta.reserve')}
+          />
+        }
         faqSlot={
           svc.faqs.length > 0 ? (
             <PublicFaqAccordion items={svc.faqs} />

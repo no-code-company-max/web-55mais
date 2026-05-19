@@ -11,13 +11,17 @@ type Props = {
   ctaLabel: string;
   priceFromLabel: string;
   priceUnknownLabel: string;
+  /** Interactive booking trigger, composed at the page layer
+   *  (boundaries forbids features→features). When absent the CTA
+   *  falls back to a disabled button. */
+  ctaSlot?: ReactNode;
   /** FAQ accordion, composed at the page layer (boundaries forbids
    *  features→features), rendered below the CTA. */
   faqSlot?: ReactNode;
 };
 
-// Asymmetric 2-column hero. CTA is intentionally inert (visible but
-// disabled) — booking flow is out of scope for this page.
+// Asymmetric 2-column hero. The CTA renders the injected ctaSlot
+// (booking modal launcher) or, as a fallback, a disabled button.
 export function ServiceDetailHero({
   name,
   description,
@@ -26,6 +30,7 @@ export function ServiceDetailHero({
   ctaLabel,
   priceFromLabel,
   priceUnknownLabel,
+  ctaSlot,
   faqSlot,
 }: Props) {
   return (
@@ -47,19 +52,21 @@ export function ServiceDetailHero({
               unknownLabel={priceUnknownLabel}
             />
           </div>
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="
-              inline-flex items-center justify-center
-              rounded-full bg-brand-mustard px-7 py-3.5
-              text-base font-bold text-brand-text
-              opacity-60
-            "
-          >
-            {ctaLabel}
-          </button>
+          {ctaSlot ?? (
+            <button
+              type="button"
+              disabled
+              aria-disabled="true"
+              className="
+                inline-flex items-center justify-center
+                rounded-full bg-brand-mustard px-7 py-3.5
+                text-base font-bold text-brand-text
+                opacity-60
+              "
+            >
+              {ctaLabel}
+            </button>
+          )}
 
           {faqSlot && <div className="mt-10 md:mt-12">{faqSlot}</div>}
         </div>
