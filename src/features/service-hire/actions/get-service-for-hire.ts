@@ -32,23 +32,42 @@ export async function getServiceForHire(
 ): Promise<ServiceForHire | null> {
   const supabase = createClient();
 
-  const { data: service } = await supabase
-    .from('services')
-    .select('id, slug, i18n, questions')
-    .eq('id', serviceId)
-    .eq('status', 'published')
-    .maybeSingle();
+  // The three reads are independent given the input serviceId; fire
+  // them in parallel and only honour service_countries / subtype
+  // groups after we confirm the service is published. The unhappy
+  // path (unpublished) wastes two queries — acceptable, since the
+  // happy path now runs ~3× faster (one DB round-trip depth, not
+  // three serialised awaits).
+  const [serviceRes, countryRes, groupRes] = await Promise.all([
+    supabase
+      .from('services')
+      .select('id, slug, i18n, questions')
+      .eq('id', serviceId)
+      .eq('status', 'published')
+      .maybeSingle(),
+    supabase
+      .from('service_countries')
+      .select('country_id, countries(code, is_active, timezone)')
+      .eq('service_id', serviceId)
+      .eq('is_active', true),
+    supabase
+      .from('service_subtype_group_assignments')
+      .select(
+        `service_id,
+         group_id,
+         service_subtype_groups (
+           id, slug, i18n,
+           service_subtypes ( id, slug, i18n, is_active, sort_order )
+         )`,
+      )
+      .eq('service_id', serviceId),
+  ]);
 
+  const service = serviceRes.data;
   if (!service) return null;
 
   // Active countries for this service.
-  const { data: countryRows } = await supabase
-    .from('service_countries')
-    .select('country_id, countries(code, is_active, timezone)')
-    .eq('service_id', serviceId)
-    .eq('is_active', true);
-
-  const activeCountries = (countryRows ?? [])
+  const activeCountries = (countryRes.data ?? [])
     .map((row) => row.countries as unknown as { code: string; is_active: boolean; timezone: string } | null)
     .filter((c): c is { code: string; is_active: boolean; timezone: string } => !!c && c.is_active);
 
@@ -58,17 +77,7 @@ export async function getServiceForHire(
   );
 
   // Assigned subtype groups (with items) — needed for renderer to resolve options.
-  const { data: groupAssignments } = await supabase
-    .from('service_subtype_group_assignments')
-    .select(
-      `service_id,
-       group_id,
-       service_subtype_groups (
-         id, slug, i18n,
-         service_subtypes ( id, slug, i18n, is_active, sort_order )
-       )`,
-    )
-    .eq('service_id', serviceId);
+  const groupAssignments = groupRes.data;
 
   const assignedGroups: AssignedSubtypeGroup[] = (groupAssignments ?? [])
     .map((row) => {

@@ -946,7 +946,10 @@
     "countryPlaceholder": "Choisissez un pays",
     "cityLabel": "Ville",
     "cityPlaceholder": "Choisissez une ville",
-    "modalClose": "Fermer"
+    "modalClose": "Fermer",
+    "unavailableNotFound": "Ce service n’est plus disponible.",
+    "unavailableNoCountries": "Ce service n’est pas encore disponible dans votre région.",
+    "unavailableGeneric": "Impossible d’ouvrir la réservation. Réessayez."
   },
   "TalentOnboarding": {
     "pageTitle": "Complète ton profil",

@@ -10,51 +10,55 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { getServiceForHire } from '@/features/service-hire/actions/get-service-for-hire';
-import { getHireLocationOptions } from '@/features/service-hire/actions/get-hire-location-options';
+import {
+  getHireBootstrap,
+  type HireBootstrap,
+} from '@/features/service-hire/actions/get-hire-bootstrap';
 import type { PublishedServiceOption } from '@/features/service-hire/actions/list-published-services';
-import type { ServiceForHire } from '@/features/service-hire/actions/get-service-for-hire';
-import type { HireLocationOptions } from '@/features/service-hire/lib/hire-location-types';
-import type { FiscalIdTypeOption } from '@/features/service-hire/actions/list-fiscal-id-types';
 import { buildServiceHireHints } from '@/features/service-hire/lib/build-hints';
 import { ServiceHireWizard } from '@/features/service-hire/components/wizard';
 
 type Props = {
   services: PublishedServiceOption[];
   locale: string;
-  fiscalIdTypes: FiscalIdTypeOption[];
 };
 
-export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) {
+export function TestServiceHirePage({ services, locale }: Props) {
   const t = useTranslations('AdminTestServiceHire');
   const tg = useTranslations();
   const [serviceId, setServiceId] = useState<string>('');
-  const [service, setService] = useState<ServiceForHire | null>(null);
-  const [locationOptions, setLocationOptions] =
-    useState<HireLocationOptions | null>(null);
+  const [data, setData] = useState<HireBootstrap | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, startTransition] = useTransition();
-
-  const handleSelect = (id: string) => {
-    setServiceId(id);
-    if (!id) {
-      setService(null);
-      setLocationOptions(null);
-      return;
-    }
-    startTransition(async () => {
-      const [data, opts] = await Promise.all([
-        getServiceForHire(id, locale),
-        getHireLocationOptions(id, locale),
-      ]);
-      setService(data);
-      setLocationOptions(opts);
-    });
-  };
 
   const reset = () => {
     setServiceId('');
-    setService(null);
-    setLocationOptions(null);
+    setData(null);
+    setError(null);
+  };
+
+  const handleSelect = (id: string) => {
+    setServiceId(id);
+    setError(null);
+    if (!id) {
+      setData(null);
+      return;
+    }
+    startTransition(async () => {
+      const res = await getHireBootstrap(id, locale);
+      if (!res.ok) {
+        setData(null);
+        setError(
+          res.reason === 'not_found'
+            ? tg('ServiceHire.unavailableNotFound')
+            : res.reason === 'no_active_countries'
+              ? tg('ServiceHire.unavailableNoCountries')
+              : tg('ServiceHire.unavailableGeneric'),
+        );
+        return;
+      }
+      setData(res.data);
+    });
   };
 
   return (
@@ -87,18 +91,24 @@ export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) 
         <p className="text-muted-foreground text-sm">{t('loading')}</p>
       )}
 
-      {service && locationOptions && !isLoading && (
+      {error && !isLoading && (
+        <p role="alert" className="text-sm font-medium text-red-700">
+          {error}
+        </p>
+      )}
+
+      {data && !isLoading && (
         <div className="space-y-3 rounded-md border p-4">
           <p className="text-muted-foreground text-xs">
-            {t('countriesLabel')}: {service.activeCountryCodes.join(', ') || '—'}{' '}
-            · {t('questionsCount', { count: service.questions.length })}
+            {t('countriesLabel')}: {data.service.activeCountryCodes.join(', ') || '—'}{' '}
+            · {t('questionsCount', { count: data.service.questions.length })}
           </p>
           <ServiceHireWizard
-            service={service}
+            service={data.service}
             locale={locale}
-            fiscalIdTypes={fiscalIdTypes}
-            hints={buildServiceHireHints(tg, service.name)}
-            locationOptions={locationOptions}
+            fiscalIdTypes={data.fiscalIdTypes}
+            hints={buildServiceHireHints(tg, data.service.name)}
+            locationOptions={data.locationOptions}
             onClose={reset}
           />
         </div>

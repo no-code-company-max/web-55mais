@@ -1,26 +1,14 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 import { Modal } from '@/shared/components/modal';
 import {
-  getServiceForHire,
-  type ServiceForHire,
-} from '../actions/get-service-for-hire';
-import { getHireLocationOptions } from '../actions/get-hire-location-options';
-import {
-  listFiscalIdTypes,
-  type FiscalIdTypeOption,
-} from '../actions/list-fiscal-id-types';
-import type { HireLocationOptions } from '../lib/hire-location-types';
+  getHireBootstrap,
+  type HireBootstrap,
+} from '../actions/get-hire-bootstrap';
 import { buildServiceHireHints } from '../lib/build-hints';
 import { ServiceHireWizard } from './wizard';
-
-type LoadedData = {
-  service: ServiceForHire;
-  locationOptions: HireLocationOptions;
-  fiscalIdTypes: FiscalIdTypeOption[];
-};
 
 type Props = {
   serviceId: string;
@@ -30,9 +18,13 @@ type Props = {
 };
 
 // Client island injected into the (server) ServiceDetailHero via its
-// ctaSlot. SSG/HTML stay intact; the wizard's data (service config,
-// País/Ciudad options, fiscal id types) is fetched lazily on first
-// click — the public page never pays for it at build time.
+// ctaSlot. One server-action round-trip (getHireBootstrap) gathers
+// service config + País/Ciudad options + fiscal id types in parallel
+// internally — Next.js serializes client-invoked server actions, so a
+// single action is the only way to avoid summing three round-trips.
+// On failure we render an inline role="alert" rather than opening the
+// modal, so users on the public layout always get visible feedback
+// (no dependency on a global <Toaster>).
 export function HireLauncher({
   serviceId,
   serviceName,
@@ -41,27 +33,39 @@ export function HireLauncher({
 }: Props) {
   const t = useTranslations();
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState<LoadedData | null>(null);
+  const [data, setData] = useState<HireBootstrap | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, startTransition] = useTransition();
+  const alertRef = useRef<HTMLParagraphElement>(null);
+
+  const hints = buildServiceHireHints(t, serviceName);
+
+  useEffect(() => {
+    if (error) alertRef.current?.focus();
+  }, [error]);
 
   const handleOpen = () => {
     if (data) {
       setOpen(true);
       return;
     }
+    setError(null);
     startTransition(async () => {
-      const [service, locationOptions, fiscalIdTypes] = await Promise.all([
-        getServiceForHire(serviceId, locale),
-        getHireLocationOptions(serviceId, locale),
-        listFiscalIdTypes(locale),
-      ]);
-      if (!service) return;
-      setData({ service, locationOptions, fiscalIdTypes });
+      const res = await getHireBootstrap(serviceId, locale);
+      if (!res.ok) {
+        setError(
+          res.reason === 'not_found'
+            ? hints.errors.notFound
+            : res.reason === 'no_active_countries'
+              ? hints.errors.noCountries
+              : hints.errors.generic,
+        );
+        return;
+      }
+      setData(res.data);
       setOpen(true);
     });
   };
-
-  const hints = buildServiceHireHints(t, serviceName);
 
   return (
     <>
@@ -74,6 +78,17 @@ export function HireLauncher({
       >
         {isLoading ? t('Common.loading') : ctaLabel}
       </button>
+
+      {error && (
+        <p
+          ref={alertRef}
+          role="alert"
+          tabIndex={-1}
+          className="mt-3 text-sm font-medium text-red-700 outline-none"
+        >
+          {error}
+        </p>
+      )}
 
       {data && (
         <Modal

@@ -946,7 +946,10 @@
     "countryPlaceholder": "Tria un país",
     "cityLabel": "Ciutat",
     "cityPlaceholder": "Tria una ciutat",
-    "modalClose": "Tancar"
+    "modalClose": "Tancar",
+    "unavailableNotFound": "Aquest servei ja no està disponible.",
+    "unavailableNoCountries": "Aquest servei encara no està disponible a la teva zona.",
+    "unavailableGeneric": "No hem pogut obrir la reserva. Torna-ho a provar."
   },
   "TalentOnboarding": {
     "pageTitle": "Completa el teu perfil",

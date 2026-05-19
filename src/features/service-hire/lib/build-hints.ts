@@ -98,6 +98,15 @@ type LocationHints = {
   cityPlaceholder: string;
 };
 
+// Launcher-side errors surfaced before the wizard mounts. Each maps
+// to a HireBootstrapResult.reason so the launcher renders one inline
+// alert per failure mode.
+type ErrorHints = {
+  notFound: string;
+  noCountries: string;
+  generic: string;
+};
+
 export type ServiceHireHints = {
   addressLabel: string;
   addressPlaceholder: string;
@@ -112,6 +121,7 @@ export type ServiceHireHints = {
   questions: { yes: string; no: string; fileTooLarge: string; fileWrongType: string };
   validation: ValidationMessages;
   wizard: WizardHints;
+  errors: ErrorHints;
 };
 
 // Single construction of the ServiceHire hints tree. Extracted from
@@ -238,6 +248,11 @@ export function buildServiceHireHints(
       confirm: g('confirm'),
       successTitle: g('successTitle'),
       successBody: g('successBody'),
+    },
+    errors: {
+      notFound: g('unavailableNotFound'),
+      noCountries: g('unavailableNoCountries'),
+      generic: g('unavailableGeneric'),
     },
   };
 }

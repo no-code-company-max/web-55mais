@@ -1,26 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 
-const getServiceMock = vi.fn();
-const getOptionsMock = vi.fn();
-const listFiscalMock = vi.fn();
+const bootstrapMock = vi.fn();
 
 vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-vi.mock('@/features/service-hire/actions/get-service-for-hire', () => ({
-  getServiceForHire: (id: string, locale: string) =>
-    getServiceMock(id, locale),
-}));
-
-vi.mock('@/features/service-hire/actions/get-hire-location-options', () => ({
-  getHireLocationOptions: (id: string, locale: string) =>
-    getOptionsMock(id, locale),
-}));
-
-vi.mock('@/features/service-hire/actions/list-fiscal-id-types', () => ({
-  listFiscalIdTypes: (locale: string) => listFiscalMock(locale),
+vi.mock('@/features/service-hire/actions/get-hire-bootstrap', () => ({
+  getHireBootstrap: (id: string, locale: string) => bootstrapMock(id, locale),
 }));
 
 vi.mock('@/features/service-hire/components/wizard', () => ({
@@ -40,49 +28,86 @@ const service = {
   countryTimezones: { es: 'Europe/Madrid' },
 };
 
-const locationOptions = {
-  countries: [{ code: 'es', name: 'España' }],
-  citiesByCountry: { es: [{ id: 'c1', name: 'Madrid' }] },
-  selected: null,
+const okData = {
+  service,
+  locationOptions: {
+    countries: [{ code: 'es', name: 'España' }],
+    citiesByCountry: { es: [{ id: 'c1', name: 'Madrid' }] },
+    selected: null,
+  },
+  fiscalIdTypes: [],
 };
 
+function setup() {
+  return render(
+    <HireLauncher
+      serviceId="svc-1"
+      serviceName="Jardinería"
+      locale="es"
+      ctaLabel="Reservar ahora"
+    />,
+  );
+}
+
 describe('HireLauncher', () => {
-  beforeEach(() => {
-    getServiceMock.mockReset().mockResolvedValue(service);
-    getOptionsMock.mockReset().mockResolvedValue(locationOptions);
-    listFiscalMock.mockReset().mockResolvedValue([]);
-  });
+  beforeEach(() => bootstrapMock.mockReset());
   afterEach(() => cleanup());
 
-  function setup() {
-    return render(
-      <HireLauncher
-        serviceId="svc-1"
-        serviceName="Jardinería"
-        locale="es"
-        ctaLabel="Reservar ahora"
-      />,
-    );
-  }
-
-  it('renders the CTA and no dialog until clicked', () => {
+  it('renders the CTA with no dialog and no alert until clicked', () => {
     setup();
     expect(
       screen.getByRole('button', { name: 'Reservar ahora' }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('lazily loads data and opens the modal with the wizard on click', async () => {
+  it('happy path: lazily loads via getHireBootstrap and opens the modal with the wizard', async () => {
+    bootstrapMock.mockResolvedValue({ ok: true, data: okData });
     setup();
     fireEvent.click(screen.getByRole('button', { name: 'Reservar ahora' }));
 
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toHaveAttribute('aria-label', 'Jardinería');
     expect(screen.getByText('wizard-stub')).toBeInTheDocument();
+    expect(bootstrapMock).toHaveBeenCalledWith('svc-1', 'es');
+    expect(bootstrapMock).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 
-    expect(getServiceMock).toHaveBeenCalledWith('svc-1', 'es');
-    expect(getOptionsMock).toHaveBeenCalledWith('svc-1', 'es');
-    expect(listFiscalMock).toHaveBeenCalledWith('es');
+  it('not_found: shows inline alert, keeps modal closed, button re-enabled', async () => {
+    bootstrapMock.mockResolvedValue({ ok: false, reason: 'not_found' });
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Reservar ahora' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('ServiceHire.unavailableNotFound');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Reservar ahora' }),
+    ).not.toBeDisabled();
+  });
+
+  it('no_active_countries: shows the area-unavailable alert', async () => {
+    bootstrapMock.mockResolvedValue({
+      ok: false,
+      reason: 'no_active_countries',
+    });
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Reservar ahora' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('ServiceHire.unavailableNoCountries');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('error: shows the generic retry alert', async () => {
+    bootstrapMock.mockResolvedValue({ ok: false, reason: 'error' });
+    setup();
+    fireEvent.click(screen.getByRole('button', { name: 'Reservar ahora' }));
+
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('ServiceHire.unavailableGeneric');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
