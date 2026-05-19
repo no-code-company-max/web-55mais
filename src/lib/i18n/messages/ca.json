@@ -1670,6 +1670,8 @@
       "passwordLabel": "Nova contrasenya",
       "passwordPlaceholder": "Escriu aquí…",
       "passwordHint": "Mínim 8 caràcters.",
+      "passwordToggleShow": "Mostrar contrasenya",
+      "passwordToggleHide": "Amagar contrasenya",
       "confirmLabel": "Confirmar contrasenya",
       "confirmPlaceholder": "Escriu aquí…",
       "submit": "Desar nova contrasenya",
@@ -1680,7 +1682,8 @@
       "errorWeakPassword": "La contrasenya no compleix els requisits mínims.",
       "errorNoSession": "L’enllaç ha caducat o ja s’ha utilitzat. Demana’n un de nou.",
       "errorCodeAlreadyUsed": "Aquest enllaç ja s’ha obert. Si no vas ser tu, demana’n un de nou.",
-      "errorGeneric": "No hem pogut actualitzar la contrasenya. Torna-ho a provar."
+      "errorGeneric": "No hem pogut actualitzar la contrasenya. Torna-ho a provar.",
+      "backToRequest": "Demanar un nou email"
     },
     "callback": {
       "expiredTitle": "Enllaç caducat",

@@ -1670,6 +1670,8 @@
       "passwordLabel": "New password",
       "passwordPlaceholder": "Type here…",
       "passwordHint": "At least 8 characters.",
+      "passwordToggleShow": "Show password",
+      "passwordToggleHide": "Hide password",
       "confirmLabel": "Confirm password",
       "confirmPlaceholder": "Type here…",
       "submit": "Save new password",
@@ -1680,7 +1682,8 @@
       "errorWeakPassword": "Your password doesn’t meet the minimum requirements.",
       "errorNoSession": "The link expired or has already been used. Request a new one.",
       "errorCodeAlreadyUsed": "This link has already been opened. If that wasn’t you, request a new one.",
-      "errorGeneric": "We couldn’t update the password. Please try again."
+      "errorGeneric": "We couldn’t update the password. Please try again.",
+      "backToRequest": "Request a new email"
     },
     "callback": {
       "expiredTitle": "Link expired",

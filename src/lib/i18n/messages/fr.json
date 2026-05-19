@@ -1670,6 +1670,8 @@
       "passwordLabel": "Nouveau mot de passe",
       "passwordPlaceholder": "Saisissez ici…",
       "passwordHint": "Au moins 8 caractères.",
+      "passwordToggleShow": "Afficher le mot de passe",
+      "passwordToggleHide": "Masquer le mot de passe",
       "confirmLabel": "Confirmer le mot de passe",
       "confirmPlaceholder": "Saisissez ici…",
       "submit": "Enregistrer le nouveau mot de passe",
@@ -1680,7 +1682,8 @@
       "errorWeakPassword": "Le mot de passe ne respecte pas les exigences minimales.",
       "errorNoSession": "Le lien a expiré ou a déjà été utilisé. Demandez-en un nouveau.",
       "errorCodeAlreadyUsed": "Ce lien a déjà été ouvert. Si ce n’était pas vous, demandez-en un nouveau.",
-      "errorGeneric": "Impossible de mettre à jour le mot de passe. Réessayez."
+      "errorGeneric": "Impossible de mettre à jour le mot de passe. Réessayez.",
+      "backToRequest": "Demander un nouvel email"
     },
     "callback": {
       "expiredTitle": "Lien expiré",

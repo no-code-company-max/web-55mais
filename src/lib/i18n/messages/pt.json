@@ -1670,6 +1670,8 @@
       "passwordLabel": "Nova senha",
       "passwordPlaceholder": "Escreva aqui…",
       "passwordHint": "Pelo menos 8 caracteres.",
+      "passwordToggleShow": "Mostrar senha",
+      "passwordToggleHide": "Ocultar senha",
       "confirmLabel": "Confirmar senha",
       "confirmPlaceholder": "Escreva aqui…",
       "submit": "Guardar nova senha",
@@ -1680,7 +1682,8 @@
       "errorWeakPassword": "A senha não cumpre os requisitos mínimos.",
       "errorNoSession": "O link expirou ou já foi usado. Peça um novo.",
       "errorCodeAlreadyUsed": "Este link já foi aberto. Se não foi você, peça um novo.",
-      "errorGeneric": "Não foi possível atualizar a senha. Tente de novo."
+      "errorGeneric": "Não foi possível atualizar a senha. Tente de novo.",
+      "backToRequest": "Pedir um novo email"
     },
     "callback": {
       "expiredTitle": "Link expirado",
