@@ -26,6 +26,7 @@ export type {
 export { safeNext } from './lib/safe-next';
 export { buildAuthCallbackUrl } from './lib/build-auth-callback-url';
 export type { AuthCallbackType } from './lib/build-auth-callback-url';
+export { handleAuthCallback } from './lib/handle-auth-callback';
 
 export {
   loginSchema,
