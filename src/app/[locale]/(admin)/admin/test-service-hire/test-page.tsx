@@ -14,7 +14,8 @@ import { getServiceForHire } from '@/features/service-hire/actions/get-service-f
 import type { PublishedServiceOption } from '@/features/service-hire/actions/list-published-services';
 import type { ServiceForHire } from '@/features/service-hire/actions/get-service-for-hire';
 import type { FiscalIdTypeOption } from '@/features/service-hire/actions/list-fiscal-id-types';
-import { ServiceHireForm } from '@/features/service-hire/components/service-hire-form';
+import { buildServiceHireHints } from '@/features/service-hire/lib/build-hints';
+import { ServiceHireWizard } from '@/features/service-hire/components/wizard';
 
 type Props = {
   services: PublishedServiceOption[];
@@ -24,7 +25,7 @@ type Props = {
 
 export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) {
   const t = useTranslations('AdminTestServiceHire');
-  const tg = useTranslations('ServiceHire');
+  const tg = useTranslations();
   const [serviceId, setServiceId] = useState<string>('');
   const [service, setService] = useState<ServiceForHire | null>(null);
   const [isLoading, startTransition] = useTransition();
@@ -41,6 +42,11 @@ export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) 
     });
   };
 
+  const reset = () => {
+    setServiceId('');
+    setService(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-1.5">
@@ -48,7 +54,10 @@ export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) 
         <Select value={serviceId} onValueChange={(v) => handleSelect(v ?? '')}>
           <SelectTrigger id="service-picker">
             <SelectValue placeholder={t('chooseServicePlaceholder')}>
-              {(v: string) => services.find((s) => s.id === v)?.name ?? t('chooseServicePlaceholder')}
+              {(v: string) =>
+                services.find((s) => s.id === v)?.name ??
+                t('chooseServicePlaceholder')
+              }
             </SelectValue>
           </SelectTrigger>
           <SelectContent>
@@ -64,119 +73,22 @@ export function TestServiceHirePage({ services, locale, fiscalIdTypes }: Props) 
         )}
       </div>
 
-      {isLoading && <p className="text-muted-foreground text-sm">{t('loading')}</p>}
+      {isLoading && (
+        <p className="text-muted-foreground text-sm">{t('loading')}</p>
+      )}
 
       {service && !isLoading && (
         <div className="space-y-3 rounded-md border p-4">
-          <div>
-            <h2 className="text-xl font-semibold">{service.name}</h2>
-            {service.description && (
-              <p className="text-muted-foreground text-sm">{service.description}</p>
-            )}
-            <p className="text-muted-foreground mt-1 text-xs">
-              {t('countriesLabel')}: {service.activeCountryCodes.join(', ') || '—'} ·{' '}
-              {t('questionsCount', { count: service.questions.length })}
-            </p>
-          </div>
-
-          <ServiceHireForm
+          <p className="text-muted-foreground text-xs">
+            {t('countriesLabel')}: {service.activeCountryCodes.join(', ') || '—'}{' '}
+            · {t('questionsCount', { count: service.questions.length })}
+          </p>
+          <ServiceHireWizard
             service={service}
             locale={locale}
             fiscalIdTypes={fiscalIdTypes}
-            hints={{
-              addressLabel: tg('addressLabel'),
-              addressPlaceholder: tg('addressPlaceholder'),
-              notesLabel: tg('notesLabel'),
-              notesPlaceholder: tg('notesPlaceholder'),
-              termsLabel: tg('termsLabel'),
-              submit: tg('submit'),
-              submitDisabledHint: tg('submitDisabledHint'),
-              submitSuccess: tg('submitSuccess'),
-              scheduling: {
-                title: tg('schedulingTitle'),
-                scheduleType: tg('scheduleType'),
-                once: tg('once'),
-                recurring: tg('recurring'),
-                date: tg('date'),
-                timeStart: tg('timeStart'),
-                timeEnd: tg('timeEnd'),
-                frequency: tg('frequency'),
-                weekly: tg('weekly'),
-                monthly: tg('monthly'),
-                weekdays: tg('weekdays'),
-                dayOfMonth: tg('dayOfMonth'),
-                endDate: tg('endDate'),
-                localTimeNote: tg('localTimeNote'),
-              },
-              auth: {
-                title: tg('authTitle'),
-                guest: tg('authGuest'),
-                signup: tg('authSignup'),
-                login: tg('authLogin'),
-                signupName: tg('authSignupName'),
-                signupEmail: tg('authSignupEmail'),
-                signupPassword: tg('authSignupPassword'),
-                signupPhone: tg('authSignupPhone'),
-                signupConfirm: tg('authSignupConfirm'),
-                loginEmail: tg('authLoginEmail'),
-                loginPassword: tg('authLoginPassword'),
-                loginConfirm: tg('authLoginConfirm'),
-                authenticatedAs: tg('authAuthenticatedAs'),
-                asGuest: tg('authAsGuest'),
-                error: tg('authError'),
-                emailAlreadyRegistered: tg('emailAlreadyRegistered'),
-                fiscalType: tg('fiscalType'),
-                fiscalTypePlaceholder: tg('fiscalTypePlaceholder'),
-                fiscalNumber: tg('fiscalNumber'),
-                fiscalNumberPlaceholder: tg('fiscalNumberPlaceholder'),
-                fiscalFormatError: tg('fiscalFormatError'),
-                guestData: {
-                  title: tg('guestDataTitle'),
-                  name: tg('guestDataName'),
-                  email: tg('guestDataEmail'),
-                  phone: tg('guestDataPhone'),
-                  fiscalType: tg('fiscalType'),
-                  fiscalTypePlaceholder: tg('fiscalTypePlaceholder'),
-                  fiscalNumber: tg('fiscalNumber'),
-                  fiscalNumberPlaceholder: tg('fiscalNumberPlaceholder'),
-                  formatError: tg('fiscalFormatError'),
-                  emailRegistered: tg('emailAlreadyRegistered'),
-                  submit: tg('guestDataSubmit'),
-                  error: tg('authError'),
-                },
-              },
-              billing: {
-                legend: tg('billingLegend'),
-                same: tg('billingSame'),
-                custom: tg('billingCustom'),
-                name: tg('billingName'),
-                phone: tg('billingPhone'),
-                fiscalType: tg('fiscalType'),
-                fiscalTypePlaceholder: tg('fiscalTypePlaceholder'),
-                fiscalNumber: tg('fiscalNumber'),
-                fiscalNumberPlaceholder: tg('fiscalNumberPlaceholder'),
-                formatError: tg('fiscalFormatError'),
-              },
-              questions: {
-                yes: tg('yes'),
-                no: tg('no'),
-                fileTooLarge: tg('fileTooLarge'),
-                fileWrongType: tg('fileWrongType'),
-              },
-              addressError: tg('validationAddressRequired'),
-              validation: {
-                addressRequired: tg('validationAddressRequired'),
-                dateRequired: tg('validationDateRequired'),
-                timeStartRequired: tg('validationTimeStartRequired'),
-                frequencyRequired: tg('validationFrequencyRequired'),
-                weekdaysRequired: tg('validationWeekdaysRequired'),
-                dayOfMonthRequired: tg('validationDayOfMonthRequired'),
-                termsRequired: tg('validationTermsRequired'),
-                authRequired: tg('validationAuthRequired'),
-                fieldRequired: tg('validationFieldRequired'),
-                billingCustomIncomplete: tg('validationBillingCustomIncomplete'),
-              },
-            }}
+            hints={buildServiceHireHints(tg, service.name)}
+            onClose={reset}
           />
         </div>
       )}
