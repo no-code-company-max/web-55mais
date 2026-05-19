@@ -1692,7 +1692,9 @@
     },
     "account": {
       "welcome": "Bienvenido, {name}",
-      "placeholder": "Tu zona personal estará disponible pronto."
+      "placeholder": "Tu zona personal estará disponible pronto.",
+      "logout": "Cerrar sesión",
+      "loggingOut": "Cerrando sesión…"
     }
   }
 }

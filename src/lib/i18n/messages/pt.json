@@ -1692,7 +1692,9 @@
     },
     "account": {
       "welcome": "Bem-vindo, {name}",
-      "placeholder": "A sua área pessoal estará disponível em breve."
+      "placeholder": "A sua área pessoal estará disponível em breve.",
+      "logout": "Terminar sessão",
+      "loggingOut": "A terminar sessão…"
     }
   }
 }

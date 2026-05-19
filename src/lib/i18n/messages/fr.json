@@ -1692,7 +1692,9 @@
     },
     "account": {
       "welcome": "Bienvenue, {name}",
-      "placeholder": "Votre espace personnel sera bientôt disponible."
+      "placeholder": "Votre espace personnel sera bientôt disponible.",
+      "logout": "Se déconnecter",
+      "loggingOut": "Déconnexion…"
     }
   }
 }

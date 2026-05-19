@@ -4,6 +4,7 @@ import {
   unstable_setRequestLocale,
 } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
+import { LogoutButton, logoutUser } from '@/features/auth';
 
 type Props = { params: { locale: string } };
 
@@ -38,6 +39,9 @@ export default async function MiCuentaPage({ params: { locale } }: Props) {
         {t('welcome', { name: displayName })}
       </h1>
       <p className="mt-4 text-sm text-brand-text/70">{t('placeholder')}</p>
+      <div className="mt-8">
+        <LogoutButton onLogout={logoutUser} redirectTo={`/${locale}`} />
+      </div>
     </div>
   );
 }

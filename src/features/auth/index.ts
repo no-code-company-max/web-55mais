@@ -6,6 +6,8 @@ export { requestPasswordReset } from './actions/request-password-reset';
 export type { RequestPasswordResetResult } from './actions/request-password-reset';
 export { updatePassword } from './actions/update-password';
 export type { UpdatePasswordResult } from './actions/update-password';
+export { logoutUser } from './actions/logout-user';
+export type { LogoutResult } from './actions/logout-user';
 export { listActiveCountries } from './actions/list-active-countries';
 export type { ActiveCountry } from './actions/list-active-countries';
 
@@ -16,6 +18,7 @@ export { LoginForm } from './components/login-form';
 export { RegisterForm } from './components/register-form';
 export { ForgotPasswordForm } from './components/forgot-password-form';
 export { ResetPasswordForm } from './components/reset-password-form';
+export { LogoutButton } from './components/logout-button';
 
 export { computeRegisterPrefill } from './lib/register-prefill';
 export type {

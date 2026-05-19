@@ -1692,7 +1692,9 @@
     },
     "account": {
       "welcome": "Welcome, {name}",
-      "placeholder": "Your personal area will be available soon."
+      "placeholder": "Your personal area will be available soon.",
+      "logout": "Sign out",
+      "loggingOut": "Signing out…"
     }
   }
 }

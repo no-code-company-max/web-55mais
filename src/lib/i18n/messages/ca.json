@@ -1692,7 +1692,9 @@
     },
     "account": {
       "welcome": "Benvingut, {name}",
-      "placeholder": "La teva àrea personal estarà disponible aviat."
+      "placeholder": "La teva àrea personal estarà disponible aviat.",
+      "logout": "Tancar sessió",
+      "loggingOut": "Tancant sessió…"
     }
   }
 }
