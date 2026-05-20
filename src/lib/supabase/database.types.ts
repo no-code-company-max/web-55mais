@@ -800,6 +800,72 @@ export type Database = {
           },
         ]
       }
+      order_series: {
+        Row: {
+          closed_at: string | null
+          closed_reason: string | null
+          created_at: string
+          day_of_month: number | null
+          frequency: string
+          hours_per_session: number | null
+          id: string
+          last_appointment_at: string | null
+          occurrences_cancelled: number
+          occurrences_completed: number
+          repeat_every: number
+          start_date: string
+          status: string
+          time_end: string | null
+          time_start: string
+          timezone: string
+          total_occurrences: number
+          updated_at: string
+          weekdays: number[] | null
+        }
+        Insert: {
+          closed_at?: string | null
+          closed_reason?: string | null
+          created_at?: string
+          day_of_month?: number | null
+          frequency: string
+          hours_per_session?: number | null
+          id?: string
+          last_appointment_at?: string | null
+          occurrences_cancelled?: number
+          occurrences_completed?: number
+          repeat_every?: number
+          start_date: string
+          status?: string
+          time_end?: string | null
+          time_start: string
+          timezone: string
+          total_occurrences: number
+          updated_at?: string
+          weekdays?: number[] | null
+        }
+        Update: {
+          closed_at?: string | null
+          closed_reason?: string | null
+          created_at?: string
+          day_of_month?: number | null
+          frequency?: string
+          hours_per_session?: number | null
+          id?: string
+          last_appointment_at?: string | null
+          occurrences_cancelled?: number
+          occurrences_completed?: number
+          repeat_every?: number
+          start_date?: string
+          status?: string
+          time_end?: string | null
+          time_start?: string
+          timezone?: string
+          total_occurrences?: number
+          updated_at?: string
+          weekdays?: number[] | null
+        }
+        Relationships: []
+      }
       order_sessions: {
         Row: {
           created_at: string | null
@@ -1081,6 +1147,8 @@ export type Database = {
           quantity: number | null
           rating: number | null
           schedule_type: string
+          sequence_no: number | null
+          series_id: string | null
           service_address: string | null
           service_city_id: string | null
           service_id: string | null
@@ -1126,6 +1194,8 @@ export type Database = {
           quantity?: number | null
           rating?: number | null
           schedule_type?: string
+          sequence_no?: number | null
+          series_id?: string | null
           service_address?: string | null
           service_city_id?: string | null
           service_id?: string | null
@@ -1171,6 +1241,8 @@ export type Database = {
           quantity?: number | null
           rating?: number | null
           schedule_type?: string
+          sequence_no?: number | null
+          series_id?: string | null
           service_address?: string | null
           service_city_id?: string | null
           service_id?: string | null
@@ -1207,6 +1279,13 @@ export type Database = {
             columns: ["country_id"]
             isOneToOne: false
             referencedRelation: "countries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "order_series"
             referencedColumns: ["id"]
           },
           {
@@ -2518,6 +2597,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      compute_next_slot: {
+        Args: {
+          p_day_of_month: number
+          p_frequency: string
+          p_prev: string
+          p_repeat_every: number
+          p_time: string
+          p_tz: string
+          p_weekdays: number[]
+        }
+        Returns: string
+      }
       delete_client: {
         Args: { p_client_id: string }
         Returns: {
@@ -2529,18 +2620,18 @@ export type Database = {
       is_email_registered: { Args: { p_email: string }; Returns: boolean }
       register_talent_profile: {
         Args: {
-          p_user_id: string
-          p_phone: string
-          p_address: Json
-          p_country_id: string
-          p_city_id: string
-          p_fiscal_id_type_id: string
-          p_fiscal_id: string
           p_additional_info: string
-          p_terms_accepted: boolean
+          p_address: Json
+          p_city_id: string
+          p_country_id: string
+          p_fiscal_id: string
+          p_fiscal_id_type_id: string
           p_marketing_consent: boolean
+          p_phone: string
           p_preferred_locale: string
           p_service_ids: string[]
+          p_terms_accepted: boolean
+          p_user_id: string
         }
         Returns: Json
       }
@@ -2566,6 +2657,15 @@ export type Database = {
             }
             Returns: undefined
           }
+      set_order_status: {
+        Args: {
+          p_actor_id: string
+          p_new_status: string
+          p_notes: string
+          p_order_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       legal_document_slug: "terms" | "privacy" | "terms_of_use" | "transparency"
