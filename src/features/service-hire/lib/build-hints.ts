@@ -21,7 +21,9 @@ type SchedulingHints = {
   monthly: string;
   weekdays: string;
   dayOfMonth: string;
-  endDate: string;
+  totalOccurrences: string;
+  totalOccurrencesHelp: string;
+  lastSessionPreview: (date: string) => string;
   localTimeNote: string;
 };
 
@@ -160,7 +162,9 @@ export function buildServiceHireHints(
       monthly: g('monthly'),
       weekdays: g('weekdays'),
       dayOfMonth: g('dayOfMonth'),
-      endDate: g('endDate'),
+      totalOccurrences: g('totalOccurrences'),
+      totalOccurrencesHelp: g('totalOccurrencesHelp'),
+      lastSessionPreview: (date: string) => g('lastSessionPreview', { date }),
       localTimeNote: g('localTimeNote'),
     },
     auth: {
@@ -225,6 +229,7 @@ export function buildServiceHireHints(
       frequencyRequired: g('validationFrequencyRequired'),
       weekdaysRequired: g('validationWeekdaysRequired'),
       dayOfMonthRequired: g('validationDayOfMonthRequired'),
+      totalOccurrencesRequired: g('validationTotalOccurrencesRequired'),
       termsRequired: g('validationTermsRequired'),
       authRequired: g('validationAuthRequired'),
       fieldRequired: g('validationFieldRequired'),

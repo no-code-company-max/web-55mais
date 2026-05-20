@@ -8,9 +8,9 @@ export type SchedulingValue = {
   time_end?: string;         // HH:MM
   // Recurring only:
   frequency?: 'weekly' | 'monthly';
-  weekdays?: number[];       // 0=Mon ... 6=Sun
+  weekdays?: number[];       // 0=Mon ... 6=Sun (wizard convention; SQL uses 0=Sun, convert at boundary)
   day_of_month?: number;     // 1..31
-  end_date?: string;         // ISO YYYY-MM-DD
+  total_occurrences?: number; // 2..52: fixed number of sessions reserved by the client.
 };
 
 export type BillingPartyValue = {

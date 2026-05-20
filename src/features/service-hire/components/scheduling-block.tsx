@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 import type { SchedulingValue } from '../types';
 import type { SchedulingErrors } from '../lib/validate';
+import { computeOccurrenceDate } from '../lib/compute-slots';
 
 const WEEKDAY_LABELS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
@@ -33,7 +34,10 @@ type Props = {
     monthly: string;
     weekdays: string;
     dayOfMonth: string;
-    endDate: string;
+    totalOccurrences: string;
+    totalOccurrencesHelp: string;
+    /** Template "Última sesión aproximada: {date}" — wizard renders the computed date. */
+    lastSessionPreview: (date: string) => string;
     /** Shown after the user picks an address: "Hora local del servicio: <tz>". */
     localTimeNote: string;
   };
@@ -207,15 +211,46 @@ export function SchedulingBlock({ value, onChange, errors, timezone, hints }: Pr
           )}
 
           <div className="space-y-1.5">
-            <Label htmlFor="sched-end-date">{hints.endDate}</Label>
+            <Label htmlFor="sched-total">{hints.totalOccurrences}</Label>
             <Input
-              id="sched-end-date"
-              type="date"
-              value={value.end_date ?? ''}
-              onChange={(e) => onChange({ ...value, end_date: e.target.value || undefined })}
-              className="h-9 text-sm"
+              id="sched-total"
+              type="number"
+              min={2}
+              max={52}
+              step={1}
+              value={value.total_occurrences ?? ''}
+              onChange={(e) => {
+                const n = Number(e.target.value);
+                onChange({
+                  ...value,
+                  total_occurrences: Number.isFinite(n) && n > 0 ? n : undefined,
+                });
+              }}
+              className="h-9 w-24 text-sm"
+              aria-invalid={errors?.total_occurrences ? 'true' : undefined}
             />
+            <p className="text-muted-foreground text-xs">{hints.totalOccurrencesHelp}</p>
+            {errors?.total_occurrences && (
+              <p className="text-destructive text-xs">{errors.total_occurrences}</p>
+            )}
           </div>
+
+          {(() => {
+            if (!value.start_date || !value.frequency || !value.total_occurrences) {
+              return null;
+            }
+            const last = computeOccurrenceDate(value.start_date, value.total_occurrences, {
+              frequency: value.frequency,
+              weekdays: value.weekdays,
+              day_of_month: value.day_of_month,
+            });
+            if (!last) return null;
+            return (
+              <p className="text-muted-foreground text-xs italic">
+                {hints.lastSessionPreview(last)}
+              </p>
+            );
+          })()}
         </div>
       )}
     </fieldset>

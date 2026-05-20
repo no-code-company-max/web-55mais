@@ -3,12 +3,20 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import type { Json } from '@/lib/supabase/database.types';
+import type { Database, Json } from '@/lib/supabase/database.types';
 import { composeAppointmentUtc } from '@/shared/lib/datetime';
 import type { Question } from '@/shared/lib/questions';
 import { submitServiceHireSchema } from '../schemas';
 import { resolveCityQuery } from '../lib/resolve-city-query';
 import { buildOrderPayload, type OrderContact } from './_helpers/build-order-payload';
+
+type CreateOrderArgs = Database['public']['Functions']['create_order_with_series']['Args'];
+
+// Wizard convention: 0=Mon..6=Sun. SQL `EXTRACT(DOW)` convention: 0=Sun..6=Sat.
+// Convert here so order_series.weekdays is consistent with compute_next_slot.
+function wizardWeekdaysToDow(weekdays: number[]): number[] {
+  return weekdays.map((w) => (w + 1) % 7);
+}
 
 const FALLBACK_TIMEZONE = 'Europe/Madrid';
 
@@ -94,17 +102,6 @@ export async function submitServiceHire(formData: FormData): Promise<SubmitResul
     serviceCityId = city?.id ?? null;
   }
 
-  // Compose appointment_date for once schedules. Wall-clock interpreted
-  // in the service timezone (not the runtime TZ), then stored as UTC.
-  const appointmentDate =
-    state.scheduling.schedule_type === 'once' && state.scheduling.start_date
-      ? composeAppointmentUtc(
-          state.scheduling.start_date,
-          state.scheduling.time_start,
-          orderTimezone,
-        )
-      : null;
-
   // Get current user profile + client_profile for contact fields. Profile
   // carries personal data; client_profile carries fiscal data. Both are
   // optional at this point (anonymous user before save-guest-contact has
@@ -141,32 +138,105 @@ export async function submitServiceHire(formData: FormData): Promise<SubmitResul
     fiscal_id: state.contact_fiscal_id ?? clientProfile?.fiscal_id ?? null,
   };
 
-  // INSERT order. Files are uploaded after order_id is known so paths are stable.
-  const { data: order, error: orderError } = await adminClient
-    .from('orders')
-    .insert(
-      buildOrderPayload({
-        userId,
-        serviceId: state.serviceId,
-        countryId: country.id,
-        serviceCityId,
-        serviceAddress: state.address.raw_text,
-        servicePostalCode: state.address.postal_code || null,
-        scheduleType: state.scheduling.schedule_type,
-        appointmentDate,
-        timezone: orderTimezone,
-        contact,
-        billing: state.billing,
-        notes: state.notes || null,
-        answers: state.answers as unknown as Json,
-      }),
-    )
-    .select('id')
-    .single();
-  if (orderError || !order) {
-    return { error: { message: orderError?.message ?? 'Order creation failed' } };
+  // Subtype rows are derived from answers regardless of schedule type. For
+  // 'once' we insert them after the orders insert below; for 'recurring'
+  // they ride along on the RPC payload so series creation is atomic.
+  const subtypeEntries: Array<{ subtype_id: string; question_key: string }> = [];
+  for (const q of questions) {
+    if (q.optionsSource !== 'subtype') continue;
+    const ans = state.answers[q.key];
+    const ids = Array.isArray(ans) ? (ans as string[]) : typeof ans === 'string' && ans ? [ans] : [];
+    for (const id of ids) subtypeEntries.push({ subtype_id: id, question_key: q.key });
   }
-  const orderId = order.id;
+
+  // Branch by schedule type. 'once' takes the legacy single-INSERT path;
+  // 'recurring' delegates to create_order_with_series, which creates the
+  // series row + the first occurrence + the subtype mirror in one tx.
+  let orderId: string;
+  if (state.scheduling.schedule_type === 'recurring') {
+    const s = state.scheduling;
+    if (!s.frequency || !s.total_occurrences || !s.start_date || !s.time_start) {
+      return { error: { message: 'Invalid recurring scheduling' } };
+    }
+    const rpcArgs = {
+      p_client_id: userId,
+      p_service_id: state.serviceId,
+      p_country_id: country.id,
+      p_service_city_id: serviceCityId,
+      p_service_address: state.address.raw_text,
+      p_service_postal_code: state.address.postal_code || null,
+      p_timezone: orderTimezone,
+      p_contact_name: contact.name,
+      p_contact_email: contact.email,
+      p_contact_phone: contact.phone,
+      p_contact_fiscal_id_type_id: contact.fiscal_id_type_id,
+      p_contact_fiscal_id: contact.fiscal_id,
+      p_billing_override:
+        state.billing && state.billing.mode === 'custom'
+          ? (state.billing.data as unknown as Json)
+          : null,
+      p_notes: state.notes || null,
+      p_form_data: state.answers as unknown as Json,
+      p_frequency: s.frequency,
+      p_weekdays:
+        s.frequency === 'weekly' && s.weekdays ? wizardWeekdaysToDow(s.weekdays) : null,
+      p_day_of_month: s.frequency === 'monthly' ? s.day_of_month ?? null : null,
+      p_repeat_every: null,
+      p_time_start: s.time_start,
+      p_time_end: s.time_end ?? null,
+      p_hours_per_session: null,
+      p_start_date: s.start_date,
+      p_total_occurrences: s.total_occurrences,
+      p_subtypes: (subtypeEntries.length > 0 ? subtypeEntries : null) as unknown as Json,
+    };
+    const { data: rpcData, error: rpcError } = await adminClient.rpc(
+      'create_order_with_series',
+      rpcArgs as unknown as CreateOrderArgs,
+    );
+    if (rpcError || !rpcData) {
+      return { error: { message: rpcError?.message ?? 'Order creation failed' } };
+    }
+    const result = rpcData as { order_id?: string };
+    if (!result.order_id) {
+      return { error: { message: 'Order creation failed: no id returned' } };
+    }
+    orderId = result.order_id;
+  } else {
+    // Compose appointment_date for once schedules. Wall-clock interpreted
+    // in the service timezone (not the runtime TZ), then stored as UTC.
+    const appointmentDate = state.scheduling.start_date
+      ? composeAppointmentUtc(
+          state.scheduling.start_date,
+          state.scheduling.time_start,
+          orderTimezone,
+        )
+      : null;
+    const { data: order, error: orderError } = await adminClient
+      .from('orders')
+      .insert(
+        buildOrderPayload({
+          userId,
+          serviceId: state.serviceId,
+          countryId: country.id,
+          serviceCityId,
+          serviceAddress: state.address.raw_text,
+          servicePostalCode: state.address.postal_code || null,
+          scheduleType: 'once',
+          appointmentDate,
+          timezone: orderTimezone,
+          contact,
+          billing: state.billing,
+          notes: state.notes || null,
+          answers: state.answers as unknown as Json,
+        }),
+      )
+      .select('id')
+      .single();
+    if (orderError || !order) {
+      return { error: { message: orderError?.message ?? 'Order creation failed' } };
+    }
+    orderId = order.id;
+  }
 
   // Upload files: keys with FormData entries named `file:{question_key}:{index}`.
   const uploadedAnswers: Record<string, string[]> = {};
@@ -193,37 +263,14 @@ export async function submitServiceHire(formData: FormData): Promise<SubmitResul
     await adminClient.from('orders').update({ form_data: merged }).eq('id', orderId);
   }
 
-  // Insert order_subtypes for answers from subtype-source questions.
-  const subtypeRows: Array<{ order_id: string; subtype_id: string; question_key: string }> = [];
-  for (const q of questions) {
-    if (q.optionsSource !== 'subtype') continue;
-    const ans = state.answers[q.key];
-    const ids = Array.isArray(ans) ? (ans as string[]) : typeof ans === 'string' && ans ? [ans] : [];
-    for (const id of ids) {
-      subtypeRows.push({ order_id: orderId, subtype_id: id, question_key: q.key });
-    }
-  }
-  if (subtypeRows.length > 0) {
+  // Subtype mirror runs only for 'once'; the recurring RPC already populated
+  // order_subtypes inside its own transaction.
+  if (state.scheduling.schedule_type === 'once' && subtypeEntries.length > 0) {
+    const subtypeRows = subtypeEntries.map((e) => ({ order_id: orderId, ...e }));
     const { error: subErr } = await adminClient.from('order_subtypes').insert(subtypeRows);
     if (subErr) {
       return { error: { message: `Subtype mirror failed: ${subErr.message}` } };
     }
-  }
-
-  // Insert order_schedule for recurring orders.
-  if (state.scheduling.schedule_type === 'recurring') {
-    const s = state.scheduling;
-    await adminClient.from('order_schedules').insert({
-      order_id: orderId,
-      start_date: s.start_date,
-      end_date: s.end_date ?? null,
-      time_start: s.time_start,
-      time_end: s.time_end ?? null,
-      timezone: orderTimezone,
-      weekdays: s.frequency === 'weekly' ? s.weekdays ?? null : null,
-      day_of_month: s.frequency === 'monthly' ? s.day_of_month ?? null : null,
-      generation_paused: false,
-    });
   }
 
   revalidatePath('/[locale]/dashboard', 'layout');

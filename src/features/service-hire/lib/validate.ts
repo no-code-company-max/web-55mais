@@ -7,6 +7,7 @@ export type SchedulingErrors = {
   frequency?: string;
   weekdays?: string;
   day_of_month?: string;
+  total_occurrences?: string;
 };
 
 export type ServiceHireErrors = {
@@ -25,6 +26,7 @@ export type ValidationMessages = {
   frequencyRequired: string;
   weekdaysRequired: string;
   dayOfMonthRequired: string;
+  totalOccurrencesRequired: string;
   termsRequired: string;
   authRequired: string;
   fieldRequired: string;
@@ -74,6 +76,13 @@ export function validateServiceHire(ctx: ValidationContext): ServiceHireErrors |
       !state.scheduling.day_of_month
     ) {
       schedErrors.day_of_month = m.dayOfMonthRequired;
+    }
+    if (
+      !state.scheduling.total_occurrences ||
+      state.scheduling.total_occurrences < 2 ||
+      state.scheduling.total_occurrences > 52
+    ) {
+      schedErrors.total_occurrences = m.totalOccurrencesRequired;
     }
   }
   if (Object.keys(schedErrors).length > 0) errors.scheduling = schedErrors;

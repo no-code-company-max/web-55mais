@@ -27,7 +27,7 @@ const schedulingSchema = z
     frequency: z.enum(['weekly', 'monthly']).optional(),
     weekdays: z.array(z.number().int().min(0).max(6)).optional(),
     day_of_month: z.number().int().min(1).max(31).optional(),
-    end_date: z.string().optional(),
+    total_occurrences: z.number().int().min(2).max(52).optional(),
   })
   .superRefine((s, ctx) => {
     if (s.schedule_type === 'recurring') {
@@ -50,6 +50,13 @@ const schedulingSchema = z
           code: z.ZodIssueCode.custom,
           path: ['day_of_month'],
           message: 'Day of month required for monthly recurring',
+        });
+      }
+      if (!s.total_occurrences) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['total_occurrences'],
+          message: 'Total occurrences required for recurring',
         });
       }
     }
