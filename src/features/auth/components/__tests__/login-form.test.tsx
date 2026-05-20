@@ -14,8 +14,11 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-vi.mock('@/lib/i18n/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: pushMock, refresh: refreshMock }),
+}));
+
+vi.mock('@/lib/i18n/navigation', () => ({
   Link: ({ href, children, ...rest }: { href: string; children: React.ReactNode }) => (
     <a href={typeof href === 'string' ? href : '#'} {...rest}>
       {children}

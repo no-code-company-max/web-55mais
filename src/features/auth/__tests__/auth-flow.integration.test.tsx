@@ -41,8 +41,17 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+vi.mock('next/navigation', async () => {
+  const actual = await vi.importActual<typeof import('next/navigation')>(
+    'next/navigation',
+  );
+  return {
+    ...actual,
+    useRouter: () => ({ push: pushMock, refresh: refreshMock }),
+  };
+});
+
 vi.mock('@/lib/i18n/navigation', () => ({
-  useRouter: () => ({ push: pushMock, refresh: refreshMock }),
   Link: ({
     href,
     children,
